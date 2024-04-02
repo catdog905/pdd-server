@@ -1,14 +1,12 @@
 package ru.catdog905
 package controller
 
-import cats.Functor
+import domain.RequestContext
+import storage.UserStorage
+
 import cats.data.ReaderT
 import cats.effect.IO
 import sttp.tapir.server.ServerEndpoint
-import cats.implicits.toFunctorOps
-import ru.catdog905.domain.RequestContext
-import ru.catdog905.domain.errors.AppError
-import ru.catdog905.storage.UserStorage
 
 trait UserController[F[_]] {
   def rewardUser: ServerEndpoint[Any, F]

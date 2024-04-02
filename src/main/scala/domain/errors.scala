@@ -15,39 +15,6 @@ object errors {
     val cause: Option[Throwable] = None
   }
 
-  object AppError {
-    //  implicit val throwableEncoder: Encoder[Throwable] = Encoder.encodeString.contramap(_.toString)
-    //  implicit val throwableDecoder: Decoder[Throwable] = Decoder.decodeString.emap { str =>
-    //    Right(new Throwable(str))
-    //  }
-    //
-    //  implicit val appErrorEncoder: Encoder[AppError] = Encoder.instance {
-    //    case internalError: InternalError => deriveEncoder[InternalError].apply(internalError)
-    //    case CanNotCreateUser => deriveEncoder[CanNotCreateUser.type].apply(CanNotCreateUser)
-    //    case NotSuchUserExists => deriveEncoder[NotSuchUserExists.type].apply(NotSuchUserExists)
-    //  }
-    //
-    //  implicit val internalErrorDecoder: Decoder[InternalError] = Decoder.forProduct1("cause")(InternalError.apply)
-    //  implicit val canNotCreateUserDecoder: Decoder[CanNotCreateUser.type] = Decoder.decodeUnit.as(CanNotCreateUser)
-    //  implicit val notSuchUserExistsDecoder: Decoder[NotSuchUserExists.type] = Decoder.decodeUnit.as(NotSuchUserExists)
-    //
-    //  implicit val appErrorDecoder: Decoder[AppError] = new Decoder[AppError] {
-    //    final def apply(cursor: HCursor): Decoder.Result[AppError] = {
-    //      cursor.downField("message").as[String].flatMap {
-    //        case "Internal error" => cursor.as[InternalError]
-    //        case "Can not create user" => Right(CanNotCreateUser)
-    //        case "NoSuchUserExists" => Right(NotSuchUserExists)
-    //        case other => Left(DecodingFailure(s"Unknown error message: $other", cursor.history))
-    //      }
-    //    }
-    //  }
-    //
-    //
-    //  implicit val throwableSchema: Schema[Throwable] = Schema.string
-    //
-    //  implicit val appErrorSchema: Schema[AppError] = Schema.derived[AppError]
-  }
-
   @derive(encoder, decoder)
   final case class InternalError(
                                   cause0: Throwable
@@ -70,14 +37,6 @@ object errors {
   case class DecodedError(override val message: String)
     extends AppError
 
-
-
-  //  implicit val encoder: Encoder[AppError] = (a: AppError) =>
-  //    Json.obj(
-  //      ("message", Json.fromString(a.message))
-  //    )
-  //
-  //  implicit val decoder: Decoder[AppError] = (c: HCursor) => c.downField("message").as[String].map(DecodedError.apply)
 
   implicit val throwableEncoder: Encoder[Throwable] =
     Encoder.encodeString.contramap(_.getMessage)

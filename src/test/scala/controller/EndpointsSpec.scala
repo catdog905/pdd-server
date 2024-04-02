@@ -1,25 +1,23 @@
 package ru.catdog905
 package controller
 
+import domain.RequestContext.ContextualIO
+import domain.{Replenishment, User, UserName, errors}
+import storage.UserStorage
+
 import cats.data.ReaderT
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import cats.implicits.catsSyntaxEitherId
 import io.circe.syntax.EncoderOps
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
-import org.http4s.circe.jsonEncoderOf
 import org.http4s.implicits.http4sLiteralsSyntax
-import org.http4s.{Entity, Header, Method, Request, Status}
 import org.http4s.server.Router
+import org.http4s.{Header, Method, Request, Status}
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.typelevel.ci.CIString
-import ru.catdog905.domain.RequestContext.ContextualIO
-import ru.catdog905.domain.{Replenishment, User, UserName, errors}
-import ru.catdog905.storage.UserStorage
 import sttp.tapir.server.http4s.Http4sServerInterpreter
-
-import scala.collection.immutable
 
 class EndpointsSpec extends AsyncFlatSpec with Matchers {
   it should "work" in {

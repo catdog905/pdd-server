@@ -1,19 +1,19 @@
 package ru.catdog905
 
-import cats.effect.kernel.Resource
-import cats.effect.{ExitCode, IO, IOApp}
-import doobie.Transactor
-import io.github.liquibase4s.Liquibase
-import io.github.liquibase4s.cats.CatsMigrationHandler.liquibaseHandlerForCats
 import config.AppConfig
+import controller.UserController
 import dao.UserSql
 import domain.RequestContext.ContextualIO
 import storage.PostgresUserStorage
 
+import cats.effect.kernel.Resource
+import cats.effect.{ExitCode, IO, IOApp}
 import com.comcast.ip4s.{IpLiteralSyntax, Ipv4Address, Port}
+import doobie.Transactor
+import io.github.liquibase4s.Liquibase
+import io.github.liquibase4s.cats.CatsMigrationHandler.liquibaseHandlerForCats
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Router
-import ru.catdog905.controller.UserController
 import sttp.tapir.server.http4s.Http4sServerInterpreter
 
 object Main extends IOApp {

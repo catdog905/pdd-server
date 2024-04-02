@@ -2,12 +2,15 @@ package ru.catdog905
 package dao
 
 import domain._
+
 import doobie._
 import doobie.implicits._
 
 trait UserSql {
   def addNewUser(user: User): ConnectionIO[Int]
+
   def checkUserExistence(gitlab_name: String): ConnectionIO[Boolean]
+
   def addReplenishment(replenishment: Replenishment): ConnectionIO[Int]
 }
 
@@ -20,10 +23,10 @@ object UserSql {
            VALUES (${user.name})
          """.update
 
-    def checkUserExistenceQuery(gitlab_name: String): Query0[Int] =
+    def checkUserExistenceQuery(gitlab_name: String): Query0[Boolean] =
       sql"""
-           SELECT EXISTS(SELECT 1 FROM pdd.user WHERE gitlab_name = $gitlab_name)
-         """.query[Int]
+           SELECT EXISTS(SELECT 1 FROM pdd.user WHERE gitlab_name = $gitlab_name )
+         """.query[Boolean]
 
     def insertReplenishment(replenishment: Replenishment): Update0 =
       sql"""
@@ -40,10 +43,7 @@ object UserSql {
       insertUser(user).run
 
     override def checkUserExistence(gitlab_name: String): doobie.ConnectionIO[Boolean] =
-      checkUserExistenceQuery(gitlab_name).unique.map {
-        case 0 => false
-        case _ => true
-      }
+      checkUserExistenceQuery(gitlab_name).unique
 
     override def addReplenishment(replenishment: Replenishment): doobie.ConnectionIO[Int] =
       insertReplenishment(replenishment).run

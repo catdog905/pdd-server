@@ -7,10 +7,11 @@ import pureconfig.generic.semiauto._
 import pureconfig.{ConfigReader, ConfigSource}
 
 final case class AppConfig(
-  db: DbConfig,
-  server: ServerConfig,
-  liquibase: LiquibaseConfig
-)
+                            db: DbConfig,
+                            server: ServerConfig,
+                            liquibase: LiquibaseConfig
+                          )
+
 object AppConfig {
   implicit val reader: ConfigReader[AppConfig] = deriveReader
   implicit val liquibaseConfigReader: ConfigReader[LiquibaseConfig] = deriveReader[LiquibaseConfig]
@@ -20,16 +21,18 @@ object AppConfig {
 }
 
 final case class DbConfig(
-  url: String,
-  driver: String,
-  user: String,
-  password: String
-)
+                           url: String,
+                           driver: String,
+                           user: String,
+                           password: String
+                         )
+
 object DbConfig {
   implicit val reader: ConfigReader[DbConfig] = deriveReader
 }
 
 final case class ServerConfig(host: String, port: Int)
+
 object ServerConfig {
   implicit val reader: ConfigReader[ServerConfig] = deriveReader
 }
