@@ -1,18 +1,18 @@
 package ru.catdog905
 package storage
 
-import cats.effect.IO
+import cats.effect.{IO, MonadCancelThrow}
 import cats.effect.std.Random
-import cats.implicits.catsSyntaxEitherId
+import cats.implicits.{catsSyntaxApplicativeError, catsSyntaxEitherId, toFlatMapOps, toFunctorOps}
 import cats.syntax.option._
 import dao.UserSql
 
 import doobie.Transactor
 import doobie.implicits._
 import domain.{Replenishment, User, UserName}
-import error.{AppError, CanNotCreateUser, InternalError, NotSuchUserExists}
+import domain.errors.{AppError, CanNotCreateUser, InternalError, NotSuchUserExists}
 
-import scala.collection.mutable
+import cats.FlatMap
 
 trait UserStorage[F[_]] {
   def addUser(user: User): F[Either[AppError, Unit]]
@@ -20,8 +20,8 @@ trait UserStorage[F[_]] {
   def addUserReplenishment(replenishment: Replenishment): F[Either[AppError, Unit]]
 }
 
-final case class PostgresUserStorage(userSql: UserSql, transactor: Transactor[IO]) extends UserStorage[IO] {
-  override def addUser(user: User): IO[Either[AppError, Unit]] = {
+final case class PostgresUserStorage[F[_]: MonadCancelThrow](userSql: UserSql, transactor: Transactor[F]) extends UserStorage[F] {
+  override def addUser(user: User): F[Either[AppError, Unit]] = {
     userSql.addNewUser(user).transact(transactor).attempt.map {
       case Left(th) => InternalError(th).asLeft
       case Right(result) if result == 1 => ().asRight
@@ -29,7 +29,7 @@ final case class PostgresUserStorage(userSql: UserSql, transactor: Transactor[IO
     }
   }
 
-  override def addUserReplenishment(replenishment: Replenishment): IO[Either[AppError, Unit]] = {
+  override def addUserReplenishment(replenishment: Replenishment): F[Either[AppError, Unit]] = {
     for {
       _ <- userSql.checkUserExistence(replenishment.userName.gitlab_name).transact(transactor).attempt.map {
         case Left(th) => InternalError(th).asLeft
